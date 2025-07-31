@@ -7,8 +7,8 @@ import Project from '../Models/Project.js';
 import TeamMember from '../Models/Team.js';
 import mongoose from 'mongoose';
 import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import { cloudinary } from './cloudinary.js';
 
 const app = express();
 app.use(cors());
@@ -27,17 +27,12 @@ const students = [];
 const users = [{ username: 'admin', password: '$2b$10$EBsUXWo2pWNjXFOJehnXcuLZzg/UYx5u3VwZRFyeLbjYXbvPuRJNK' }]
 const SECRET_KEY = 'hillel_fullstack';
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadPath = 'uploads/';
-    fs.mkdirSync(uploadPath, { recursive: true });
-    cb(null, uploadPath);
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'tracky',
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
   },
-  filename: function (req, file, cb) {
-    const ext = path.extname(file.originalname);
-    const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
-    cb(null, filename);
-  }
 });
 
 const upload = multer({ storage });
@@ -196,16 +191,9 @@ app.delete('/api/team/:id', authMiddleware, async (req, res) => {
     const user = await TeamMember.findById(req.params.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    // 🔥 Видаляємо фото з файлової системи
-    if (user.img?.includes('/uploads/')) {
-      const protocol = req.protocol;
-      const host = req.get('host');
-      const relativePath = user.img.replace(`${protocol}://${host}/`, '');
-      const fullPath = path.resolve(relativePath);
-
-      fs.unlink(fullPath, (err) => {
-        if (err) console.error('Image deletion error:', err.message);
-      });
+    if (user.img?.includes('res.cloudinary.com')) {
+      const publicId = user.img.split('/').pop().split('.')[0];
+      await cloudinary.uploader.destroy(`tracky/${publicId}`);
     }
 
     await TeamMember.findByIdAndDelete(req.params.id);
@@ -219,12 +207,7 @@ app.delete('/api/team/:id', authMiddleware, async (req, res) => {
 
 app.post('/api/upload', authMiddleware, upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
-
-  const protocol = req.protocol;
-  const host = req.get('host');
-  const fileUrl = `${protocol}://${host}/${req.file.path.replace(/\\/g, '/')}`;
-
-  res.json({ url: fileUrl });
+  res.json({ url: req.file.path });
 });
 
 
