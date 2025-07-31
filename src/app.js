@@ -198,7 +198,9 @@ app.delete('/api/team/:id', authMiddleware, async (req, res) => {
 
     // 🔥 Видаляємо фото з файлової системи
     if (user.img?.includes('/uploads/')) {
-      const relativePath = user.img.replace(`http://localhost:${PORT}/`, '');
+      const protocol = req.protocol;
+      const host = req.get('host');
+      const relativePath = user.img.replace(`${protocol}://${host}/`, '');
       const fullPath = path.resolve(relativePath);
 
       fs.unlink(fullPath, (err) => {
@@ -214,12 +216,17 @@ app.delete('/api/team/:id', authMiddleware, async (req, res) => {
 });
 
 
+
 app.post('/api/upload', authMiddleware, upload.single('file'), (req, res) => {
   if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
 
-  const fileUrl = `http://localhost:${PORT}/${req.file.path.replace(/\\/g, '/')}`;
+  const protocol = req.protocol;
+  const host = req.get('host');
+  const fileUrl = `${protocol}://${host}/${req.file.path.replace(/\\/g, '/')}`;
+
   res.json({ url: fileUrl });
 });
+
 
 
 app.listen(PORT, () => console.log(`Server ready on :${PORT}`));
