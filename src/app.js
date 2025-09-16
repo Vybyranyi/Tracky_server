@@ -18,14 +18,14 @@ const PORT = process.env.PORT || 3000;
 app.use('/uploads', express.static('uploads'));
 
 
-mongoose.connect('mongodb+srv://marianEduCnu:5tnghL64l4Vj5uei@cluster0.rqclvuf.mongodb.net/tracky?retryWrites=true&w=majority&appName=Cluster0')
+mongoose.connect('')
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
 const students = [];
 
-const users = [{ username: 'admin', password: '$2b$10$EBsUXWo2pWNjXFOJehnXcuLZzg/UYx5u3VwZRFyeLbjYXbvPuRJNK' }]
-const SECRET_KEY = 'hillel_fullstack';
+const users = [{ username: '', password: '' }]
+const SECRET_KEY = '';
 
 const storage = new CloudinaryStorage({
   cloudinary,
