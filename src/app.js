@@ -9,23 +9,26 @@ import mongoose from 'mongoose';
 import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import { cloudinary } from './cloudinary.js';
+import * as dotenv from 'dotenv';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+dotenv.config();
+
 const PORT = process.env.PORT || 3000;
 app.use('/uploads', express.static('uploads'));
 
 
-mongoose.connect('')
+mongoose.connect(process.env.db_url)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
 const students = [];
 
-const users = [{ username: '', password: '' }]
-const SECRET_KEY = '';
+const users = [{ username: process.env.db_user, password: process.env.db_pass }]
+const SECRET_KEY = process.env.SECRET_KEY;
 
 const storage = new CloudinaryStorage({
   cloudinary,
