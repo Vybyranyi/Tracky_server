@@ -68,7 +68,7 @@ const authMiddleware = (req, res, next) => {
 }
 
 // Endpoints for Tasks
-app.get('/api/tasks', authMiddleware, async (req, res) => {
+app.get('/tasks', authMiddleware, async (req, res) => {
   try {
     const tasks = await Task.find();
     res.json(tasks);
@@ -77,7 +77,7 @@ app.get('/api/tasks', authMiddleware, async (req, res) => {
   }
 });
 
-app.post('/api/tasks', authMiddleware, async (req, res) => {
+app.post('/tasks', authMiddleware, async (req, res) => {
   try {
     const newTask = new Task(req.body);
     await newTask.save();
@@ -87,7 +87,7 @@ app.post('/api/tasks', authMiddleware, async (req, res) => {
   }
 });
 
-app.put('/api/tasks/:id', authMiddleware, async (req, res) => {
+app.put('/tasks/:id', authMiddleware, async (req, res) => {
   try {
     const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updatedTask);
@@ -96,7 +96,7 @@ app.put('/api/tasks/:id', authMiddleware, async (req, res) => {
   }
 });
 
-app.put('/api/tasks/changeStatus/:id', authMiddleware, async (req, res) => {
+app.put('/tasks/changeStatus/:id', authMiddleware, async (req, res) => {
   try {
     const changeStatusTask = await Task.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true });
     res.json(changeStatusTask);
@@ -105,7 +105,7 @@ app.put('/api/tasks/changeStatus/:id', authMiddleware, async (req, res) => {
   }
 });
 
-app.delete('/api/tasks/:id', authMiddleware, async (req, res) => {
+app.delete('/tasks/:id', authMiddleware, async (req, res) => {
   try {
     await Task.findByIdAndDelete(req.params.id);
     res.sendStatus(204);
@@ -115,7 +115,7 @@ app.delete('/api/tasks/:id', authMiddleware, async (req, res) => {
 });
 
 // Endpoints for Projects
-app.get('/api/projects', authMiddleware, async (req, res) => {
+app.get('/projects', authMiddleware, async (req, res) => {
   try {
     const projects = await Project.find();
 
@@ -132,7 +132,7 @@ app.get('/api/projects', authMiddleware, async (req, res) => {
   }
 });
 
-app.post('/api/projects', authMiddleware, async (req, res) => {
+app.post('/projects', authMiddleware, async (req, res) => {
   try {
     const newProject = new Project(req.body);
     await newProject.save();
@@ -142,7 +142,7 @@ app.post('/api/projects', authMiddleware, async (req, res) => {
   }
 });
 
-app.put('/api/projects/:id', authMiddleware, async (req, res) => {
+app.put('/projects/:id', authMiddleware, async (req, res) => {
   try {
     const updatedProject = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updatedProject);
@@ -151,7 +151,7 @@ app.put('/api/projects/:id', authMiddleware, async (req, res) => {
   }
 });
 
-app.delete('/api/projects/:id', authMiddleware, async (req, res) => {
+app.delete('/projects/:id', authMiddleware, async (req, res) => {
   try {
     await Project.findByIdAndDelete(req.params.id);
     res.sendStatus(204);
@@ -161,7 +161,7 @@ app.delete('/api/projects/:id', authMiddleware, async (req, res) => {
 });
 
 // Endpoints for Team
-app.get('/api/team', authMiddleware, async (req, res) => {
+app.get('/team', authMiddleware, async (req, res) => {
   try {
     const team = await TeamMember.find();
     res.json(team);
@@ -170,7 +170,7 @@ app.get('/api/team', authMiddleware, async (req, res) => {
   }
 });
 
-app.post('/api/team', authMiddleware, async (req, res) => {
+app.post('/team', authMiddleware, async (req, res) => {
   try {
     const newTeamMember = new TeamMember(req.body);
     await newTeamMember.save();
@@ -180,7 +180,7 @@ app.post('/api/team', authMiddleware, async (req, res) => {
   }
 });
 
-app.put('/api/team/:id', authMiddleware, async (req, res) => {
+app.put('/team/:id', authMiddleware, async (req, res) => {
   try {
     const updatedTeamMember = await TeamMember.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updatedTeamMember);
@@ -189,7 +189,7 @@ app.put('/api/team/:id', authMiddleware, async (req, res) => {
   }
 });
 
-app.delete('/api/team/:id', authMiddleware, async (req, res) => {
+app.delete('/team/:id', authMiddleware, async (req, res) => {
   try {
     const user = await TeamMember.findById(req.params.id);
     if (!user) return res.status(404).json({ message: 'User not found' });
