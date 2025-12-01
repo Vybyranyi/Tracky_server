@@ -6,6 +6,7 @@ import taskRoutes from './routes/taskRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import teamRoutes from './routes/teamRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
 
 dotenv.config();
@@ -23,6 +24,7 @@ connectDB();
 
 // Routes
 app.use('/', authRoutes);
+app.use('/', userRoutes);
 app.use('/tasks', taskRoutes);
 app.use('/projects', projectRoutes);
 app.use('/team', teamRoutes);
