@@ -1,6 +1,5 @@
 import User from '../models/User.js';
 import bcrypt from 'bcrypt';
-import crypto from 'crypto';
 
 const generatePassword = (length = 10) => {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
@@ -13,7 +12,7 @@ const generatePassword = (length = 10) => {
 
 export const createUser = async (req, res) => {
     try {
-        const { email, role } = req.body;
+        const { email, role, name, job } = req.body;
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -27,6 +26,8 @@ export const createUser = async (req, res) => {
             email,
             password: hashedPassword,
             role: role || 'user',
+            name: name || '',
+            job: job || '',
         });
 
         await newUser.save();
@@ -34,9 +35,12 @@ export const createUser = async (req, res) => {
         res.status(201).json({
             message: 'User created successfully',
             user: {
-                id: newUser._id,
+                _id: newUser._id,
                 email: newUser.email,
                 role: newUser.role,
+                name: newUser.name,
+                job: newUser.job,
+                createdAt: newUser.createdAt,
             },
             generatedPassword: rawPassword
         });
@@ -59,7 +63,7 @@ export const getAllUsers = async (req, res) => {
 export const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const { email, role } = req.body;
+        const { email, role, name, job } = req.body;
 
         const user = await User.findById(id);
         if (!user) {
@@ -68,15 +72,20 @@ export const updateUser = async (req, res) => {
 
         if (email) user.email = email;
         if (role) user.role = role;
+        if (name !== undefined) user.name = name;
+        if (job !== undefined) user.job = job;
 
         await user.save();
 
         res.json({
             message: 'User updated successfully',
             user: {
-                id: user._id,
+                _id: user._id,
                 email: user.email,
                 role: user.role,
+                name: user.name,
+                job: user.job,
+                createdAt: user.createdAt,
             }
         });
     } catch (error) {
@@ -116,7 +125,8 @@ export const resetPassword = async (req, res) => {
 
         res.json({
             message: 'Password reset successfully',
-            newPassword: newPassword
+            newPassword: newPassword,
+            email: user.email
         });
     } catch (error) {
         console.error('Reset password error:', error);
@@ -139,7 +149,7 @@ export const getProfile = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, name, job } = req.body;
         const user = await User.findById(req.user.userId);
 
         if (!user) {
@@ -147,6 +157,8 @@ export const updateProfile = async (req, res) => {
         }
 
         if (email) user.email = email;
+        if (name !== undefined) user.name = name;
+        if (job !== undefined) user.job = job;
         if (password) {
             user.password = await bcrypt.hash(password, 10);
         }
@@ -156,9 +168,11 @@ export const updateProfile = async (req, res) => {
         res.json({
             message: 'Profile updated successfully',
             user: {
-                id: user._id,
+                _id: user._id,
                 email: user.email,
                 role: user.role,
+                name: user.name,
+                job: user.job,
             }
         });
     } catch (error) {
